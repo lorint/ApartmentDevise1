@@ -1,0 +1,43 @@
+<p id="notice"><%= notice %></p>
+
+<% unless @current_customer_id.nil? %>
+<h1>From <%= Customer.current.subdomain %> you can go to:</h1>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Subdomain</th>
+      <th colspan="<%= @current_customer_id.nil? ? 3 : 1 %>"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @customers.each do |customer| %>
+      <tr>
+        <td><%= customer.subdomain %></td>
+        <td><% if @current_customer_id == customer.id %>
+              &lt;&lt; CURRENT &gt;&gt;
+            <% elsif @linked_customer_ids.include?(customer.id) %>
+              <%= link_to 'Switch', "http://#{customer.subdomain}.lvh.me:3000" %>
+              <%= link_to 'Unlink', user_link_path(UserLink.find_by(user_id: current_user.id, customer_id: customer.id).id), method: :delete %>
+            <% elsif !@current_customer_id.nil? %>
+              <%= link_to 'Link', user_links_path(customer_id: customer.id), method: :post %>
+            <% else %>
+              <%= link_to 'Navigate', "http://#{customer.subdomain}.lvh.me:3000" %>
+            <% end %>
+        </td>
+        <% if @current_customer_id.nil? %>
+        <td><%= link_to 'Edit', edit_customer_path(customer) %></td>
+        <td><%= link_to 'Destroy', customer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<% if @current_customer_id.nil? %>
+<%= link_to 'New Customer', new_customer_path %>
+<% end %>

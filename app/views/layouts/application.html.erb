@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ApartmentDevise1</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+    <% unless devise_controller? || current_user.nil? %>
+    	Welcome, <%= current_user.email %> to <%= Customer.current&.subdomain %>!<br>
+    	<%= link_to "Logout", destroy_user_session_path, method: :delete %><br>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>

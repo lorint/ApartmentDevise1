@@ -1,0 +1,19 @@
+current directory: /Users/lorin/ApartmentDevise1/vendor/bundle/gems/byebug-9.1.0/ext/byebug
+/Users/lorin/.rvm/rubies/ruby-2.3.0/bin/ruby -r ./siteconf20171208-59114-pc5muz.rb extconf.rb
+creating Makefile
+
+current directory: /Users/lorin/ApartmentDevise1/vendor/bundle/gems/byebug-9.1.0/ext/byebug
+make "DESTDIR=" clean
+
+current directory: /Users/lorin/ApartmentDevise1/vendor/bundle/gems/byebug-9.1.0/ext/byebug
+make "DESTDIR="
+compiling breakpoint.c
+compiling byebug.c
+compiling context.c
+compiling locker.c
+compiling threads.c
+linking shared-object byebug/byebug.bundle
+
+current directory: /Users/lorin/ApartmentDevise1/vendor/bundle/gems/byebug-9.1.0/ext/byebug
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 byebug.bundle ./.gem.20171208-59114-exaf21/byebug
