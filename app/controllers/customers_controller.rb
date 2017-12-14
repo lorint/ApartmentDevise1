@@ -9,6 +9,17 @@ class CustomersController < ApplicationController
     @linked_customer_ids = current_user&.origin_user_links&.map(&:customer_id) || []
   end
 
+  def widget_counts
+    customers = Customer.select(:id, :subdomain)
+    sql = customers.map{|c| "SELECT #{c.id} AS customer_id, COUNT(*) AS count FROM #{c.subdomain}.widgets\n"}.
+      join("UNION ALL\n")
+    counts = ActiveRecord::Base.connection.execute(sql)
+    render json: {current_customer_id: session[:customer_id],
+        current_user_id: session["warden.user.user.key"]&.first&.first,
+        counts: counts
+      }
+  end
+
   # GET /customers/new
   def new
     @customer = Customer.new

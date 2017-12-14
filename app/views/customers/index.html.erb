@@ -8,7 +8,7 @@
   <thead>
     <tr>
       <th>Subdomain</th>
-      <th colspan="<%= @current_customer_id.nil? ? 3 : 1 %>"></th>
+      <th colspan="<%= @current_customer_id.nil? ? 3 : 2 %>"></th>
     </tr>
   </thead>
 
@@ -30,6 +30,8 @@
         <% if @current_customer_id.nil? %>
         <td><%= link_to 'Edit', edit_customer_path(customer) %></td>
         <td><%= link_to 'Destroy', customer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% else %>
+          <td><%= link_to "", "http://#{customer.subdomain}.lvh.me:3000/widgets", {id: "cust_#{customer.id}_widget_count"} %></td>
         <% end %>
       </tr>
     <% end %>
@@ -39,5 +41,33 @@
 <br>
 
 <% if @current_customer_id.nil? %>
-<%= link_to 'New Customer', new_customer_path %>
+  <%= link_to 'New Customer', new_customer_path %>
+<% else %>
+  <label for="cbWidgetCounts"><input type="checkbox" id="cbWidgetCounts">Monitor widget counts</label>
+
+  <script>
+    var cbWidgetCounts = document.getElementById("cbWidgetCounts");
+    var widgetCountTimeout;
+    cbWidgetCounts.addEventListener("change", function () {
+      if (this.checked) {
+        doWidgetTimeout();
+      }
+      else {
+        clearTimeout(widgetCountTimeout);
+      }
+    });
+
+    function doWidgetTimeout() {
+      $.get("/customers/widget_counts", function (data) {
+          console.log(data);
+          for (var i = 0; i < data.counts.length; ++i) {
+            var entry = data.counts[i];
+            var td = document.getElementById("cust_" + entry.customer_id + "_widget_count");
+            td.innerHTML = entry.count;
+          }
+        }
+      );
+      widgetCountTimeout = setTimeout(doWidgetTimeout, 5000);
+    }
+  </script>
 <% end %>
