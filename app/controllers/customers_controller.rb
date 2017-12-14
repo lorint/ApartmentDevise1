@@ -6,7 +6,7 @@ class CustomersController < ApplicationController
   def index
     @customers = Customer.all
     @current_customer_id = Customer.current&.id
-    @linked_customer_ids = current_user&.origin_user_links&.map(&:customer_id) || []
+    @linked_customer_ids = current_user&.origin_user_links&.map(&:link_customer_id) || []
   end
 
   def widget_counts
@@ -15,7 +15,8 @@ class CustomersController < ApplicationController
       join("UNION ALL\n")
     counts = ActiveRecord::Base.connection.execute(sql)
     render json: {current_customer_id: session[:customer_id],
-        current_user_id: session["warden.user.user.key"]&.first&.first,
+        # current_user_id: session["warden.user.user.key"]&.first&.first,
+        current_user_id: session["link_user_id"],
         counts: counts
       }
   end

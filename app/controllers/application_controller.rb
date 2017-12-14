@@ -4,6 +4,11 @@ class ApplicationController < ActionController::Base
 
   before_action :authorize_current_activity, :unless => :devise_controller?
 
+  Warden::Manager.after_set_user do |user, auth, opts|
+    session = auth.env["rack.session"]
+    session["link_user_id"] = user.id
+  end
+
   def authorize_current_activity
     # See if we're coming in from another customer
     current_customer_id = Customer.current&.id
@@ -15,13 +20,13 @@ class ApplicationController < ActionController::Base
 
         # See if we've got a link that allows us over to this other customer
         Apartment::Tenant.switch!(previous_customer.subdomain)
-        previous_user_id = session["warden.user.user.key"]&.first&.first
-        user_link = UserLink.find_by(user_id: previous_user_id, customer_id: current_customer_id)
+        # previous_user_id = session["warden.user.user.key"]&.first&.first
+        user_link = UserLink.find_by(user_id: session["link_user_id"], link_customer_id: current_customer_id)
         # On user_link we can see the link_user_id for who we should now be
         Apartment::Tenant.switch!(this_subdomain)
 
         # Re-do things so we're on as the right person
-        sign_in(User.find(user_link.link_user_id), scope: :user) if user_link
+        sign_in(User.find(user_link.user_id), scope: :user) if user_link
       end
     end
 

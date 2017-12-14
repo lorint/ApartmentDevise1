@@ -7,17 +7,18 @@ class UserLinksController < ApplicationController
     other_customer = Customer.find(params[:customer_id])
 
     Apartment::Tenant.switch!(other_customer.subdomain)
-    link_user = User.find_by(email: current_user.email)
-    link_user ||= User.create(email: current_user.email, password: "password", password_confirmation: "password")
+    user = User.find_by(email: current_user.email)
+    user ||= User.create(email: current_user.email, password: "password", password_confirmation: "password")
     Apartment::Tenant.switch!(this_subdomain)
 
-    user_link = current_user.origin_user_links.new({customer_id: other_customer.id, link_user_id: link_user.id})
+    user_link = current_user.origin_user_links.new({link_customer_id: other_customer.id, user_id: user.id})
 
     respond_to do |format|
       if user_link.save
         format.html { redirect_to customers_path, notice: 'UserLink was successfully created.' }
         format.json { render :show, status: :created, location: user_link }
       else
+        binding.pry
         format.html { render :new }
         format.json { render json: user_link.errors, status: :unprocessable_entity }
       end

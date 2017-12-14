@@ -4,5 +4,5 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  has_many :origin_user_links, class_name: "UserLink", foreign_key: :user_id
+  has_many :origin_user_links, class_name: "UserLink", foreign_key: :link_user_id
 end

@@ -20,7 +20,7 @@
               &lt;&lt; CURRENT &gt;&gt;
             <% elsif @linked_customer_ids.include?(customer.id) %>
               <%= link_to 'Switch', "http://#{customer.subdomain}.lvh.me:3000" %>
-              <%= link_to 'Unlink', user_link_path(UserLink.find_by(user_id: current_user.id, customer_id: customer.id).id), method: :delete %>
+              <%= link_to 'Unlink', user_link_path(UserLink.find_by(link_user_id: current_user.id, link_customer_id: customer.id).id), method: :delete %>
             <% elsif !@current_customer_id.nil? %>
               <%= link_to 'Link', user_links_path(customer_id: customer.id), method: :post %>
             <% else %>
@@ -47,13 +47,14 @@
 
   <script>
     var cbWidgetCounts = document.getElementById("cbWidgetCounts");
-    var widgetCountTimeout;
+    var widgetCountTimeout = null;
     cbWidgetCounts.addEventListener("change", function () {
       if (this.checked) {
         doWidgetTimeout();
       }
       else {
         clearTimeout(widgetCountTimeout);
+        widgetCountTimeout = null;
       }
     });
 
@@ -69,5 +70,11 @@
       );
       widgetCountTimeout = setTimeout(doWidgetTimeout, 5000);
     }
+
+    $(document).on('turbolinks:before-render', function(event) {
+      if (widgetCountTimeout) {
+        clearTimeout(widgetCountTimeout);
+      }
+    });
   </script>
 <% end %>
